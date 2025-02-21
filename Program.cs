@@ -1,4 +1,6 @@
 ﻿
+using System.Globalization;
+using System.Linq;
 using System.Text;
 
 class CodingPractice
@@ -95,10 +97,10 @@ class CodingPractice
         Console.WriteLine($"Find all possible subsets in string {input} =>");
         List<string> subsets = new List<string>();
         subsets.Add("");
-        for (int i=0;i<newInput.Length;i++)
+        for (int i = 0; i < newInput.Length; i++)
         {
             int count = subsets.Count;
-            for(int j=0;j<count; j++)
+            for (int j = 0; j < count; j++)
             {
                 subsets.Add(subsets[j] + newInput[i]);
             }
@@ -107,8 +109,19 @@ class CodingPractice
         {
             Console.Write($"{{{sub}}}");
         }
-        Console.WriteLine();
 
+        List<string> result = new List<string>();
+        List<string> result1 = new List<string>();
+        string arr = "abc";
+        for (int i = 0; i < arr.Length; i++)
+        {
+            for (int j = i; j < arr.Length; j++)
+            { // 0,0 0,1 0,2 1,1 1,2 2,2
+              // 0,1 0,2 0,3 1,2 1,3 2,3
+                result.Add(arr.Substring(i, j-i+1));
+            }
+        }
+        
         // 8.  Perform Left circular rotation of an array by 1 place
         // 1 2 3 4 5 => 2 3 4 5 1
         Console.Write($"Left circular rotation of '{newInput}' by 1 place =>");
@@ -214,10 +227,61 @@ class CodingPractice
         }
         Console.WriteLine($"Sum of digits of {input} is {sum}");
     }
-    internal static void ArrManipulation(Array input)
+    internal static void ArrManipulation(string[] input)
     {
-    }
+        // Find second largest integer in an array using only one loop
+        int[] newInput = Array.ConvertAll(input, x => int.Parse(x));
+        int max = 0;
+        int secondMax = 0;
+        for (int i = 1; i < newInput.Length; i++)
+        { 
+            if(newInput[i] > max)
+            { 
+                secondMax = secondMax < max ? secondMax : max;
+                max = newInput[i];
+            }
+            else if (newInput[i] > secondMax && newInput[i]!=max)
+            {
+                secondMax = newInput[i];
+            }
+        }
+        Console.WriteLine($"Second largest integer in the array => {secondMax}");
 
+        // OR
+        // 1 4 5 2 3 => 4
+        newInput = [.. newInput.OrderDescending()]; // input.OrderDescending().ToArray();
+        Console.WriteLine($"Second largest integer in the array using Array built-in functions => {newInput[1]}");
+    }
+    internal static void Arr2DManipulation(int[,] input)
+    {   //  0 1 2
+        //0[1,2,3] => [1,4,2,5,3,6]
+        //1[4,5,6]
+        Console.WriteLine("Yor 2D array is:");
+        for (int i = 0; i < input.GetLength(0); i++)
+        {
+            for (int j = 0; j < input.GetLength(1); j++)
+            {
+                Console.Write(input[i, j] + " ");
+            }
+            Console.WriteLine();
+        }
+        Console.WriteLine();
+        int[] list = new int[input.Length];
+        int count = 0;
+        for (int col = 0; col < input.GetLength(1); col++)
+        {
+            for(int row=0; row<input.GetLength(0);row++)
+            {
+                list[count++] = input[row, col];
+            }
+        }
+        Console.WriteLine("1D array of 2D array is:");
+        foreach (var i in list)
+        {
+            Console.Write(i + " ");
+        }
+        Console.WriteLine();
+    }
 }
 
 class Program()
@@ -229,7 +293,7 @@ class Program()
         do
         {
             Console.WriteLine("Options available for you to choose:");
-            Console.WriteLine("\n 1. String Manipulation \n 2. Palindrome \n 3. Fibonacci \n 4. Prime \n 5. Array Manipulation");
+            Console.WriteLine("\n 1. String Manipulation \n 2. Palindrome \n 3. Fibonacci \n 4. Prime \n 5. 1D Array \n 6. 2D Array");
             Console.WriteLine("Enter your option choice:");
             var op = int.TryParse(Console.ReadLine(), out int num);
             if (op)
@@ -268,8 +332,21 @@ class Program()
                         break;
                     case 5:
                         Console.WriteLine("Enter your array (DELIMITER : SPACE) :");
-                        Array arr = Console.ReadLine().Split(" ");
+                        string[] arr = Console.ReadLine().Split(" ");
                         CodingPractice.ArrManipulation(arr);
+                        break;
+                    case 6:
+                        int[,] array2D = new int[2, 3];
+                        Console.WriteLine("Enter your 2D integer array:");
+                        for (int i = 0; i < 2; i++)
+                        {
+                            for (int j = 0; j < 3; j++)
+                            {
+                                Console.Write($"Enter element at position [{j},{i}]: ");
+                                array2D[i, j] = Convert.ToInt32(Console.ReadLine());
+                            }
+                        }
+                        CodingPractice.Arr2DManipulation(array2D);
                         break;
                     default:
                         Console.WriteLine("In future will try to add that number.");
